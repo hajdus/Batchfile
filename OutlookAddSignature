@@ -1,0 +1,37 @@
+@echo off 
+
+setlocal enableextensions disabledelayedexpansion
+
+for /f "tokens=2*" %%a in ('net user "%Username%" /domain ^| find /i "nazwa"') do set DisplayName=%%b
+
+for /f "tokens=1,2 delims=/ " %%a in ("%DisplayName%") do set nazwisko=%%a&set imie=%%b
+
+Set "DisplayName=%imie% %nazwisko%"
+
+
+xcopy "Stopka\*.*"  %appdata%\microsoft\podpisy /s /i /y
+xcopy "Stopka\*.*"  %appdata%\microsoft\signatures /s /i /y
+
+set "search=USER"
+    chcp 1250
+	set "replace=%DisplayName%"
+			
+    set "textFile=%appdata%\microsoft\podpisy\Mailing.htm"
+
+    for /f "delims=" %%i in ('type "%textFile%" ^& break ^> "%textFile%" ') do (
+        set "line=%%i"
+        setlocal enabledelayedexpansion
+		
+        >>"%textFile%" echo(!line:%search%=%replace%!
+        endlocal
+    )
+
+set "textFile=%appdata%\microsoft\signatures\Mailing.htm"
+
+    for /f "delims=" %%i in ('type "%textFile%" ^& break ^> "%textFile%" ') do (
+        set "line=%%i"
+        setlocal enabledelayedexpansion
+		
+        >>"%textFile%" echo(!line:%search%=%replace%!
+        endlocal
+    )
